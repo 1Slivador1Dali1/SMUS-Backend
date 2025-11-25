@@ -46,6 +46,38 @@ app.post("/notions", (req, res) => {
   res.status(201).json(newNotion);
 });
 
+app.patch("/notions/:id", (req, res) => {
+  const notionId = req.params.id;
+  const { name, description } = req.body;
+
+  if (!notionId) {
+    return res.status(400).send("Bad Request");
+  }
+
+  if (!name && !description) {
+    return res.status(400).json({
+      error:
+        "At least one field (name or description) must be provided for update",
+    });
+  }
+
+  const notion = notions.items.find((n) => n.id === notionId);
+
+  if (!notion) {
+    return res.status(404).json({ error: "Notion not found" });
+  }
+
+  if (name) {
+    notion.name = name;
+  }
+
+  if (description) {
+    notion.description = description;
+  }
+
+  res.json(notion);
+});
+
 app.delete("/notions/:id", (req, res) => {
   const notionId = req.params.id;
   const index = notions.items.findIndex((n) => n.id === notionId);
