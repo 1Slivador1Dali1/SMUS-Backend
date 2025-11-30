@@ -1,14 +1,14 @@
 import express from "express";
-import { notions } from "./mockDB.ts";
 import { initializeNotionModule } from "./modules/notions/index.ts";
 import { initializeUserModule } from "./modules/users/index.ts";
+import pool from "./config/db.ts";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-const notionModule = initializeNotionModule(notions);
+const notionModule = initializeNotionModule(pool);
 const userModule = initializeUserModule({ items: [] });
 
 app.get("/", (req, res) => {

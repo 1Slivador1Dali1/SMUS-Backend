@@ -1,4 +1,4 @@
 node_modules
 .gitmessage
 .env
-config
+dbConfig.sql
