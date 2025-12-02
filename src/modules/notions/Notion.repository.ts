@@ -1,5 +1,5 @@
 import type { Pool } from "pg";
-import type { INotion, INotions } from "./Notion.model.ts";
+import type { CreateNotionDto, INotion, INotions } from "./Notion.model.ts";
 
 export class NotionRepository {
   private pool: Pool;
@@ -27,34 +27,50 @@ export class NotionRepository {
     return result.rows[0] || null;
   }
 
-  // create(notion: Omit<INotion, "id">): INotion {
-  //   const newNotion: INotion = {
-  //     id: String(this.notions.items.length + 1),
-  //     ...notion,
-  //   };
+  async create(notion: CreateNotionDto): Promise<INotion> {
+    const result = await this.pool.query<INotion>(
+      "INSERT INTO notions (name, description) VALUES ($1, $2) RETURNING *",
+      [notion.name, notion.description]
+    );
 
-  //   this.notions.items.push(newNotion);
+    return result.rows[0] as INotion;
+  }
 
-  //   return newNotion;
-  // }
+  async update(
+    id: string,
+    updates: Partial<CreateNotionDto>
+  ): Promise<INotion | null> {
+    const updateFields = Object.keys(updates).filter(
+      (key) => updates[key as keyof CreateNotionDto] !== undefined
+    );
 
-  // update(id: string, updates: Partial<Omit<INotion, "id">>): INotion | null {
-  //   const notion = this.findById(id);
+    const setClause = updateFields
+      .map((field, index) => `${field} = $${index + 2}`)
+      .join(", ");
 
-  //   if (!notion) return null;
+    const fullSetClause = `${setClause}, updated_at = NOW()`;
 
-  //   if (updates.name) notion.name = updates.name;
-  //   if (updates.description) notion.description = updates.description;
+    const params: any[] = [id];
+    updateFields.forEach((field) => {
+      params.push(updates[field as keyof CreateNotionDto]);
+    });
 
-  //   return notion;
-  // }
+    const query = `
+    UPDATE notions 
+    SET ${fullSetClause}
+    WHERE id = $1
+    RETURNING *
+  `;
 
-  // delete(id: string): boolean {
-  //   const index = this.notions.items.findIndex((n) => n.id === id);
+    const result = await this.pool.query<INotion>(query, params);
+    return result.rows[0] || null;
+  }
 
-  //   if (index === -1) return false;
+  async delete(id: string): Promise<boolean> {
+    const result = await this.pool.query("DELETE FROM notions WHERE id=$1", [
+      id,
+    ]);
 
-  //   this.notions.items.splice(index, 1);
-  //   return true;
-  // }
+    return (result.rowCount ?? 0) > 0;
+  }
 }

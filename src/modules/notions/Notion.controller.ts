@@ -34,7 +34,7 @@ export class NotionController {
         return;
       }
 
-      const notion = this.notionService.getNotionsById(notionId);
+      const notion = await this.notionService.getNotionsById(notionId);
 
       if (!notion) {
         res.status(404).json({ error: "Notion not found" });
@@ -47,59 +47,74 @@ export class NotionController {
     }
   };
 
-  // createNotion = (req: Request, res: Response): void => {
-  //   try {
-  //     const { name, description } = req.body;
+  createNotion = async (req: Request, res: Response) => {
+    try {
+      const { name, description } = req.body;
 
-  //     if (!name || !description) {
-  //       res.status(400).json({ error: "Name and description required" });
-  //     }
+      if (!name || !description) {
+        return res.status(400).json({ error: "Name and description required" });
+      }
 
-  //     const newNotion = this.notionService.createNotion({ name, description });
-  //     res.status(201).json(newNotion);
-  //   } catch (error) {
-  //     if (error instanceof Error) {
-  //       res.status(400).json({ error: error.message });
-  //     } else {
-  //       res.status(500).json({ error: "Internal server error" });
-  //     }
-  //   }
-  // };
+      if (typeof name !== "string" || typeof description !== "string") {
+        return res
+          .status(400)
+          .json({ error: "Name and description must be strings" });
+      }
 
-  // updateNotion = (req: Request, res: Response): void => {
-  //   try {
-  //     const notionId = req.params.id;
+      const newNotion = await this.notionService.createNotion({
+        name,
+        description,
+      });
+      res.status(201).json(newNotion);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Internal server error" });
+      }
+    }
+  };
 
-  //     if (!notionId) {
-  //       res.status(400).json({ error: "Id is required" });
-  //       return;
-  //     }
-  //     const { name, description } = req.body;
+  updateNotion = async (req: Request, res: Response) => {
+    try {
+      const notionId = req.params.id;
 
-  //     const updatedNotion = this.notionService.updateNotion(notionId, {
-  //       name,
-  //       description,
-  //     });
+      if (!notionId) {
+        res.status(400).json({ error: "Id is required" });
+        return;
+      }
+      const { name, description } = req.body;
 
-  //     res.status(200).json(updatedNotion);
-  //   } catch (error) {
-  //     res.status(500).json({ error: "Internal server error" });
-  //   }
-  // };
+      if (!name && !description) {
+        return res
+          .status(400)
+          .json({ error: "Not specified, at least one field to update" });
+      }
 
-  // deleteNotion = (req: Request, res: Response): void => {
-  //   try {
-  //     const notionId = req.params.id;
+      const updatedNotion = this.notionService.updateNotion(notionId, {
+        name,
+        description,
+      });
 
-  //     if (!notionId) {
-  //       res.status(400).json({ error: "Id is required" });
-  //       return;
-  //     }
+      res.status(200).json(updatedNotion);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
 
-  //     this.notionService.deleteNotion(notionId);
-  //     res.status(204).send();
-  //   } catch (error) {
-  //     res.status(500).json({ error: "Internal server error" });
-  //   }
-  // };
+  deleteNotion = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const notionId = req.params.id;
+
+      if (!notionId) {
+        res.status(400).json({ error: "Id is required" });
+        return;
+      }
+
+      await this.notionService.deleteNotion(notionId);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
 }

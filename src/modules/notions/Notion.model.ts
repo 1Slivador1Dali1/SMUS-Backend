@@ -9,3 +9,8 @@ export interface INotion {
 export interface INotions {
   items: INotion[];
 }
+
+export interface CreateNotionDto {
+  name: string;
+  description: string;
+}
