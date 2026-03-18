@@ -9,7 +9,7 @@ const port = 3000;
 app.use(express.json());
 
 const notionModule = initializeNotionModule(pool);
-const userModule = initializeUserModule({ items: [] });
+const userModule = initializeUserModule(pool);
 
 app.get("/", (req, res) => {
   res.send("Home Express!");
