@@ -1,4 +1,4 @@
-import type { IUser, IUsers } from "./User.model.ts";
+import type { CreateUserDto, IUser, IUsers } from "./User.model.ts";
 import type { UserRepository } from "./User.repository.ts";
 
 export class UserService {
@@ -8,11 +8,15 @@ export class UserService {
     this.repository = repository;
   }
 
-  getAllUsers(): IUsers {
-    return this.repository.findAll();
+  async createUser(userData: CreateUserDto): Promise<IUser> {
+    if (!userData.username || !userData.password) {
+      throw new Error("User name and password are required");
+    }
+
+    return this.repository.create(userData);
   }
 
-  getUserById(id: string): IUser | null {
-    return this.repository.findById(id) || null;
+  async getAllUsers(): Promise<IUsers> {
+    return await this.repository.findAll();
   }
 }

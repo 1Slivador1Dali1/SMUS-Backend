@@ -1,17 +1,28 @@
-import type { IUser, IUsers } from "./User.model.ts";
+import type { Pool } from "pg";
+import type { CreateUserDto, IUser, IUsers } from "./User.model.ts";
 
 export class UserRepository {
-  private users: IUsers;
+  private pool: Pool;
 
-  constructor(users: IUsers) {
-    this.users = users;
+  constructor(pool: Pool) {
+    this.pool = pool;
   }
 
-  findAll(): IUsers {
-    return this.users;
+  async create(userData: CreateUserDto): Promise<IUser> {
+    const result = await this.pool.query<IUser>(
+      "INSERT INTO users (username, password_hash, is_superuser) VALUES ($1, $2, $3) RETURNING *",
+      [userData.username, userData.password, userData.is_superuser ?? false],
+    );
+
+    return result.rows[0] as IUser;
   }
 
-  findById(id: string): IUser | undefined {
-    return this.users.items.find((u) => u.id === id);
+  async findAll(): Promise<IUsers> {
+    const result = await this.pool.query<IUser>(
+      "SELECT id, username, is_superuser FROM users ORDER BY created_at DESC",
+    );
+    return {
+      items: result.rows,
+    };
   }
 }
