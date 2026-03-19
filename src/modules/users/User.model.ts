@@ -31,6 +31,10 @@ export interface WeightHistory {
   created_at: Date;
 }
 
+export interface WeightsHistory {
+  items: WeightHistory[];
+}
+
 export interface CreateUserDto {
   username: string;
   password: string;

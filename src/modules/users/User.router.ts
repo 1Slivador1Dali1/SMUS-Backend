@@ -10,6 +10,7 @@ export const createUserRouter = (userController: UserController): Router => {
   // #TODO: Update User
   router.delete("/:id", userController.deleteUser);
   // #TODO: Metric User
-  // #TODO: Weight History
+  // #TODO: Add Weight History
+  router.get("/:id/weight", userController.getAllWeightHistory);
   return router;
 };

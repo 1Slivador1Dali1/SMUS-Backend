@@ -4,6 +4,8 @@ import type {
   IUser,
   IUsers,
   UserResponse,
+  WeightHistory,
+  WeightsHistory,
 } from "./User.model.ts";
 
 export class UserRepository {
@@ -49,5 +51,16 @@ export class UserRepository {
 
   // #TODO: Metric User
 
-  // #TODO: Weight History
+  // #TODO: Add Weight History
+
+  async findWeightHistory(id: string): Promise<WeightsHistory> {
+    const result = await this.pool.query<WeightHistory>(
+      "SELECT * FROM weight_history WHERE user_id=$1 ORDER BY date DESC",
+      [id],
+    );
+
+    return {
+      items: result.rows,
+    };
+  }
 }

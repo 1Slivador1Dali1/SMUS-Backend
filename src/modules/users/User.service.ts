@@ -3,6 +3,7 @@ import type {
   IUser,
   IUsers,
   UserResponse,
+  WeightsHistory,
 } from "./User.model.ts";
 import type { UserRepository } from "./User.repository.ts";
 
@@ -49,5 +50,13 @@ export class UserService {
 
   // #TODO: Metric User
 
-  // #TODO: Weight History
+  // #TODO: Add Weight History
+
+  async getAllWeightHistory(id: string): Promise<WeightsHistory> {
+    if (!id) {
+      throw new Error("User id is required");
+    }
+
+    return await this.repository.findWeightHistory(id);
+  }
 }

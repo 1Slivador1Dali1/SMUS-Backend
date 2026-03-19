@@ -84,5 +84,23 @@ export class UserController {
 
   // #TODO: Metric User
 
-  // #TODO: Weight History
+  // #TODO: Add Weight History
+
+  getAllWeightHistory = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+
+      if (!userId || userId === undefined) {
+        res.status(400).json({ error: "User id is required" });
+      }
+
+      const weightsHistory = await this.userService.getAllWeightHistory(
+        userId ?? "",
+      );
+
+      res.status(200).json(weightsHistory);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
 }
