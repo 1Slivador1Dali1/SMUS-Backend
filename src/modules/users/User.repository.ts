@@ -1,5 +1,10 @@
 import type { Pool } from "pg";
-import type { CreateUserDto, IUser, IUsers } from "./User.model.ts";
+import type {
+  CreateUserDto,
+  IUser,
+  IUsers,
+  UserResponse,
+} from "./User.model.ts";
 
 export class UserRepository {
   private pool: Pool;
@@ -19,10 +24,26 @@ export class UserRepository {
 
   async findAll(): Promise<IUsers> {
     const result = await this.pool.query<IUser>(
-      "SELECT id, username, is_superuser FROM users ORDER BY created_at DESC",
+      "SELECT id, username, is_superuser, created_at FROM users ORDER BY created_at DESC",
     );
     return {
       items: result.rows,
     };
+  }
+
+  async findById(id: string): Promise<UserResponse | null> {
+    const result = await this.pool.query<UserResponse>(
+      "SELECT id, username, is_superuser, created_at FROM users WHERE id=$1",
+      [id],
+    );
+    return result.rows[0] || null;
+  }
+
+  // #TODO: Update User
+
+  async delete(id: string): Promise<boolean> {
+    const result = await this.pool.query("DELETE FROM users WHERE id=$1", [id]);
+
+    return (result.rowCount ?? 0) > 0;
   }
 }

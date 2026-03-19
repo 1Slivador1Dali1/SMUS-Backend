@@ -6,6 +6,8 @@ export const createUserRouter = (userController: UserController): Router => {
 
   router.post("/", userController.createUser);
   router.get("/", userController.getAllUsers);
-
+  router.get("/:id", userController.getUserById);
+  // #TODO: Update User
+  router.delete("/:id", userController.deleteUser);
   return router;
 };

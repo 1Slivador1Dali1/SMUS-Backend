@@ -1,4 +1,9 @@
-import type { CreateUserDto, IUser, IUsers } from "./User.model.ts";
+import type {
+  CreateUserDto,
+  IUser,
+  IUsers,
+  UserResponse,
+} from "./User.model.ts";
 import type { UserRepository } from "./User.repository.ts";
 
 export class UserService {
@@ -18,5 +23,27 @@ export class UserService {
 
   async getAllUsers(): Promise<IUsers> {
     return await this.repository.findAll();
+  }
+
+  async getUserById(id: string): Promise<UserResponse | null> {
+    if (!id) {
+      throw new Error("User id is required");
+    }
+
+    return this.repository.findById(id) || null;
+  }
+
+  // #TODO: Update User
+
+  async deleteUser(id: string): Promise<void> {
+    if (!id) {
+      throw new Error("User id is required");
+    }
+
+    const isDeleted = await this.repository.delete(id);
+
+    if (!isDeleted) {
+      throw new Error("User not found");
+    }
   }
 }
