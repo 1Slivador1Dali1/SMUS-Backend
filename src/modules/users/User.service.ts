@@ -46,4 +46,8 @@ export class UserService {
       throw new Error("User not found");
     }
   }
+
+  // #TODO: Metric User
+
+  // #TODO: Weight History
 }

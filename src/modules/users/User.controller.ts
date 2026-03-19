@@ -1,6 +1,5 @@
 import { type Request, type Response } from "express";
 import type { UserService } from "./User.service.ts";
-import { error } from "console";
 
 export class UserController {
   userService: UserService;
@@ -82,4 +81,8 @@ export class UserController {
       res.status(500).json({ error: "Internal server error" });
     }
   };
+
+  // #TODO: Metric User
+
+  // #TODO: Weight History
 }

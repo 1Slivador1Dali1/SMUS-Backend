@@ -46,4 +46,8 @@ export class UserRepository {
 
     return (result.rowCount ?? 0) > 0;
   }
+
+  // #TODO: Metric User
+
+  // #TODO: Weight History
 }
