@@ -66,7 +66,21 @@ export class UserController {
     }
   };
 
-  // #TODO: Update User
+  updateUser = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const body = req.body;
+      if (!userId || userId === undefined) {
+        res.status(400).json({ error: "User id is required" });
+        return;
+      }
+
+      const result = await this.userService.updateUser(String(userId), body);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
 
   deleteUser = async (req: Request, res: Response): Promise<void> => {
     try {

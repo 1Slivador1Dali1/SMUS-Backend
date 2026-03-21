@@ -3,6 +3,7 @@ import type {
   CreateUserDto,
   IUser,
   IUsers,
+  UpdateUserDto,
   UserResponse,
   WeightHistory,
   WeightsHistory,
@@ -41,7 +42,30 @@ export class UserRepository {
     return result.rows[0] || null;
   }
 
-  // #TODO: Update User
+  async update(id: string, data: UpdateUserDto): Promise<UserResponse | null> {
+    const setClauses: string[] = [];
+    const values: any[] = [id];
+    let paramIndex = 2;
+
+    if (data.username) {
+      setClauses.push(`username = $${paramIndex}`);
+      values.push(data.username);
+      paramIndex++;
+    }
+
+    if (data.password) {
+      setClauses.push(`passwor_hash = $${paramIndex}`);
+      values.push(data.password);
+      paramIndex++;
+    }
+
+    if (setClauses.length === 0) return null;
+
+    const query = `UPDATE users SET ${setClauses.join(", ")} WHERE id = $1 RETURNING id, username, is_superuser, created_at`;
+    const result = await this.pool.query<IUser>(query, values);
+
+    return result.rows[0] || null;
+  }
 
   async delete(id: string): Promise<boolean> {
     const result = await this.pool.query("DELETE FROM users WHERE id=$1", [id]);

@@ -2,6 +2,7 @@ import type {
   CreateUserDto,
   IUser,
   IUsers,
+  UpdateUserDto,
   UserResponse,
   WeightsHistory,
 } from "./User.model.ts";
@@ -34,7 +35,16 @@ export class UserService {
     return this.repository.findById(id) || null;
   }
 
-  // #TODO: Update User
+  async updateUser(
+    id: string,
+    data: UpdateUserDto,
+  ): Promise<UserResponse | null> {
+    if (!id) {
+      throw new Error("User id is required");
+    }
+
+    return this.repository.update(id, data) || null;
+  }
 
   async deleteUser(id: string): Promise<void> {
     if (!id) {
