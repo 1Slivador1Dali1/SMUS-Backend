@@ -98,7 +98,23 @@ export class UserController {
     }
   };
 
-  // #TODO: Metric User
+  getUserMetrics = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      if (!userId || userId === undefined) {
+        res.status(400).json({ error: "User id is required" });
+        return;
+      }
+
+      const result = await this.userService.getUserMetrics(String(userId));
+
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
+
+  // #TODO: Add-Update Metric User
 
   // #TODO: Add Weight History
 

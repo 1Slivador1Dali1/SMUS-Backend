@@ -3,6 +3,7 @@ import type {
   IUser,
   IUsers,
   UpdateUserDto,
+  UserMetrics,
   UserResponse,
   WeightsHistory,
 } from "./User.model.ts";
@@ -58,7 +59,15 @@ export class UserService {
     }
   }
 
-  // #TODO: Metric User
+  async getUserMetrics(id: string): Promise<UserMetrics | null> {
+    if (!id) {
+      throw new Error("User id is required");
+    }
+
+    return (await this.repository.findMetricsByUserId(id)) || null;
+  }
+
+  // #TODO: Add-Update Metric User
 
   // #TODO: Add Weight History
 

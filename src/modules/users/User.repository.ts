@@ -4,6 +4,7 @@ import type {
   IUser,
   IUsers,
   UpdateUserDto,
+  UserMetrics,
   UserResponse,
   WeightHistory,
   WeightsHistory,
@@ -73,7 +74,13 @@ export class UserRepository {
     return (result.rowCount ?? 0) > 0;
   }
 
-  // #TODO: Metric User
+  async findMetricsByUserId(id: string): Promise<UserMetrics | null> {
+    const query = "SELECT * FROM user_metrics WHERE user_id=$1";
+    const result = await this.pool.query(query, [id]);
+    return result.rows[0] || null;
+  }
+
+  // #TODO: Add-Update Metric User
 
   // #TODO: Add Weight History
 
