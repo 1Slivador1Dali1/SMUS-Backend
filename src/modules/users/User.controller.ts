@@ -55,6 +55,7 @@ export class UserController {
 
       if (!userId || userId === undefined) {
         res.status(400).json({ error: "User id is required" });
+        return;
       }
 
       const user = await this.userService.getUserById(String(userId));
@@ -72,6 +73,7 @@ export class UserController {
       const userId = req.params.id;
       if (!userId || userId === undefined) {
         res.status(400).json({ error: "User id is required" });
+        return;
       }
 
       const result = await this.userService.deleteUser(String(userId));
@@ -92,6 +94,7 @@ export class UserController {
 
       if (!userId || userId === undefined) {
         res.status(400).json({ error: "User id is required" });
+        return;
       }
 
       const weightsHistory = await this.userService.getAllWeightHistory(
