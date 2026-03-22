@@ -56,7 +56,7 @@ export class UserRepository {
     }
 
     if (data.password) {
-      setClauses.push(`passwor_hash = $${paramIndex}`);
+      setClauses.push(`password_hash = $${paramIndex}`);
       values.push(data.password);
       paramIndex++;
     }

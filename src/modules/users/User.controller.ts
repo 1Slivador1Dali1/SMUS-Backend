@@ -90,9 +90,9 @@ export class UserController {
         return;
       }
 
-      const result = await this.userService.deleteUser(String(userId));
+      await this.userService.deleteUser(String(userId));
 
-      res.status(204).json(result);
+      res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
