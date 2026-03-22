@@ -73,6 +73,6 @@ export interface UpdateUserMetricsDto {
 
 export interface AddWeightDto {
   weight: number;
-  date?: Date;
+  date: Date;
   notes?: string;
 }

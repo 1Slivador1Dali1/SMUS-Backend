@@ -1,10 +1,12 @@
 import type {
+  AddWeightDto,
   CreateUserDto,
   IUser,
   IUsers,
   UpdateUserDto,
   UserMetrics,
   UserResponse,
+  WeightHistory,
   WeightsHistory,
 } from "./User.model.ts";
 import type { UserRepository } from "./User.repository.ts";
@@ -69,7 +71,13 @@ export class UserService {
 
   // #TODO: Add-Update Metric User
 
-  // #TODO: Add Weight History
+  async setWeight(id: string, data: AddWeightDto): Promise<WeightHistory> {
+    if (!id) {
+      throw new Error("User id is required");
+    }
+
+    return await this.repository.addWeightRecord(id, data);
+  }
 
   async getAllWeightHistory(id: string): Promise<WeightsHistory> {
     if (!id) {

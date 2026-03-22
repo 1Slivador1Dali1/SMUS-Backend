@@ -116,7 +116,27 @@ export class UserController {
 
   // #TODO: Add-Update Metric User
 
-  // #TODO: Add Weight History
+  setWeight = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const data = req.body;
+
+      if (!userId || userId === undefined) {
+        res.status(400).json({ error: "User id is required" });
+        return;
+      }
+
+      if (data === undefined || data === null) {
+        res.status(400).json({ error: "Weight and date is required" });
+      }
+
+      const result = await this.userService.setWeight(userId, data);
+
+      res.status(201).json(result);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
 
   getAllWeightHistory = async (req: Request, res: Response): Promise<void> => {
     try {

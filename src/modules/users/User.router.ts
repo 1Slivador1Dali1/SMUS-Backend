@@ -11,7 +11,7 @@ export const createUserRouter = (userController: UserController): Router => {
   router.delete("/:id", userController.deleteUser);
   router.get("/:id/metrics", userController.getUserMetrics);
   // #TODO: Add-Update Metric User
-  // #TODO: Add Weight History
+  router.post("/:id/weight", userController.setWeight);
   router.get("/:id/weight", userController.getAllWeightHistory);
   return router;
 };

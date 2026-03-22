@@ -1,5 +1,6 @@
 import type { Pool } from "pg";
 import type {
+  AddWeightDto,
   CreateUserDto,
   IUser,
   IUsers,
@@ -82,7 +83,17 @@ export class UserRepository {
 
   // #TODO: Add-Update Metric User
 
-  // #TODO: Add Weight History
+  async addWeightRecord(
+    id: string,
+    data: AddWeightDto,
+  ): Promise<WeightHistory> {
+    const query =
+      "INSERT INTO weight_history (user_id, weight, date, notes) VALUES ($1, $2, $3, $4) RETURNING *";
+    const values = [id, data.weight, data.date, data.notes];
+
+    const result = await this.pool.query(query, values);
+    return result.rows[0];
+  }
 
   async findWeightHistory(id: string): Promise<WeightsHistory> {
     const result = await this.pool.query<WeightHistory>(
