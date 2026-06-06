@@ -12,7 +12,7 @@ const pool = new Pool({
 });
 
 pool.on("connect", () => {
-  console.log("Connect DB suceess");
+  console.log("Connect DB success");
 });
 
 export default pool;

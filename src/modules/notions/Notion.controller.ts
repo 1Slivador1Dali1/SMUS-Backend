@@ -1,4 +1,3 @@
-import { error } from "console";
 import type { NotionService } from "./Notion.service.ts";
 import type { Request, Response } from "express";
 
@@ -91,7 +90,7 @@ export class NotionController {
           .json({ error: "Not specified, at least one field to update" });
       }
 
-      const updatedNotion = this.notionService.updateNotion(notionId, {
+      const updatedNotion = await this.notionService.updateNotion(notionId, {
         name,
         description,
       });

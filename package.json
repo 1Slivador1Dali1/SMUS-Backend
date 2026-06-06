@@ -9,7 +9,7 @@
     "dev": "nodemon src/index.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dali",
   "license": "ISC",
   "packageManager": "pnpm@10.22.0",
   "dependencies": {
