@@ -1,3 +1,4 @@
+import { AppError } from "../../utils/AppError.ts";
 import type { CreateNotionDto, INotion, INotions } from "./Notion.model.ts";
 import type { NotionRepository } from "./Notion.repository.ts";
 
@@ -18,7 +19,7 @@ export class NotionService {
 
   async createNotion(notionData: CreateNotionDto): Promise<INotion> {
     if (!notionData.name || !notionData.description) {
-      throw new Error("Name and description are required");
+      throw new AppError("Name and description are required", 400);
     }
 
     return this.repository.create(notionData);
@@ -26,16 +27,16 @@ export class NotionService {
 
   async updateNotion(
     id: string,
-    updates: Partial<CreateNotionDto>
+    updates: Partial<CreateNotionDto>,
   ): Promise<INotion> {
     if (!updates.name && !updates.description) {
-      throw new Error("At least one field must be provided for update");
+      throw new AppError("At least one field must be provided for update", 400);
     }
 
     const updatedNotion = await this.repository.update(id, updates);
 
     if (!updatedNotion) {
-      throw new Error("Notion not found");
+      throw new AppError("Notion not found", 404);
     }
 
     return updatedNotion;
@@ -45,7 +46,7 @@ export class NotionService {
     const isDeleted = await this.repository.delete(id);
 
     if (!isDeleted) {
-      throw new Error("Notion not found");
+      throw new AppError("Notion not found", 404);
     }
   }
 }

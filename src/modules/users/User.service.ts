@@ -1,7 +1,6 @@
+import { AppError } from "../../utils/AppError.ts";
 import type {
   AddWeightDto,
-  CreateUserDto,
-  IUser,
   IUsers,
   UpdateUserDto,
   UserMetrics,
@@ -18,21 +17,13 @@ export class UserService {
     this.repository = repository;
   }
 
-  async createUser(userData: CreateUserDto): Promise<IUser> {
-    if (!userData.username || !userData.password) {
-      throw new Error("User name and password are required");
-    }
-
-    return this.repository.create(userData);
-  }
-
   async getAllUsers(): Promise<IUsers> {
     return await this.repository.findAll();
   }
 
   async getUserById(id: string): Promise<UserResponse | null> {
     if (!id) {
-      throw new Error("User id is required");
+      throw new AppError("User id is required", 400);
     }
 
     return this.repository.findById(id) || null;
@@ -43,27 +34,37 @@ export class UserService {
     data: UpdateUserDto,
   ): Promise<UserResponse | null> {
     if (!id) {
-      throw new Error("User id is required");
+      throw new AppError("User id is required", 400);
     }
 
-    return this.repository.update(id, data) || null;
+    if (!data) {
+      throw new AppError("User data is required", 400);
+    }
+
+    const processedData: UpdateUserDto = {};
+
+    if (data.username) {
+      processedData.username = data.username;
+    }
+
+    return this.repository.update(id, processedData) || null;
   }
 
   async deleteUser(id: string): Promise<void> {
     if (!id) {
-      throw new Error("User id is required");
+      throw new AppError("User id is required", 400);
     }
 
     const isDeleted = await this.repository.delete(id);
 
     if (!isDeleted) {
-      throw new Error("User not found");
+      throw new AppError("User not found", 404);
     }
   }
 
   async getUserMetrics(id: string): Promise<UserMetrics | null> {
     if (!id) {
-      throw new Error("User id is required");
+      throw new AppError("User id is required", 400);
     }
 
     return (await this.repository.findMetricsByUserId(id)) || null;
@@ -73,7 +74,7 @@ export class UserService {
 
   async setWeight(id: string, data: AddWeightDto): Promise<WeightHistory> {
     if (!id) {
-      throw new Error("User id is required");
+      throw new AppError("User id is required", 400);
     }
 
     return await this.repository.addWeightRecord(id, data);
@@ -81,7 +82,7 @@ export class UserService {
 
   async getAllWeightHistory(id: string): Promise<WeightsHistory> {
     if (!id) {
-      throw new Error("User id is required");
+      throw new AppError("User id is required", 400);
     }
 
     return await this.repository.findWeightHistory(id);

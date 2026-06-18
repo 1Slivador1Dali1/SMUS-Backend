@@ -1,7 +1,6 @@
 import type { Pool } from "pg";
 import type {
   AddWeightDto,
-  CreateUserDto,
   IUser,
   IUsers,
   UpdateUserDto,
@@ -16,15 +15,6 @@ export class UserRepository {
 
   constructor(pool: Pool) {
     this.pool = pool;
-  }
-
-  async create(userData: CreateUserDto): Promise<IUser> {
-    const result = await this.pool.query<IUser>(
-      "INSERT INTO users (username, password_hash, is_superuser) VALUES ($1, $2, $3) RETURNING *",
-      [userData.username, userData.password, userData.is_superuser ?? false],
-    );
-
-    return result.rows[0] as IUser;
   }
 
   async findAll(): Promise<IUsers> {
@@ -52,12 +42,6 @@ export class UserRepository {
     if (data.username) {
       setClauses.push(`username = $${paramIndex}`);
       values.push(data.username);
-      paramIndex++;
-    }
-
-    if (data.password) {
-      setClauses.push(`password_hash = $${paramIndex}`);
-      values.push(data.password);
       paramIndex++;
     }
 

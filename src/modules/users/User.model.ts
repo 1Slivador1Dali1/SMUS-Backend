@@ -43,7 +43,6 @@ export interface CreateUserDto {
 
 export interface UpdateUserDto {
   username?: string;
-  password?: string;
   is_superuser?: string;
 }
 
