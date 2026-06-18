@@ -72,15 +72,15 @@ export class AuthService {
       throw new AppError("Password is required", 400);
     }
 
-    const usernameAlready = await this.repository.findByUsername(dto.username);
+    const userFind = await this.repository.findByUsername(dto.username);
 
-    if (!usernameAlready) {
+    if (!userFind) {
       throw new AppError("Invalid credentials", 401);
     }
 
     const comparePassword = await bcrypt.compare(
       dto.password,
-      usernameAlready.password_hash,
+      userFind.password_hash,
     );
 
     if (!comparePassword) {
@@ -88,12 +88,12 @@ export class AuthService {
     }
 
     const token = jwt.sign(
-      { id: usernameAlready.id, username: usernameAlready.username },
+      { id: userFind.id, username: userFind.username },
       this.authConfig.jwtSecret,
     );
 
     return {
-      user: this.toSafeUser(usernameAlready),
+      user: this.toSafeUser(userFind),
       token,
     };
   }

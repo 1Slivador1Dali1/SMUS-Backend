@@ -46,11 +46,6 @@ export interface UserResponse {
   created_at: Date;
 }
 
-export interface LoginDto {
-  username: string;
-  password: string;
-}
-
 export interface AuthResponse {
   user: UserResponse;
   token: string;
