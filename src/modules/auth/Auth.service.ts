@@ -4,6 +4,7 @@ import type { IUser } from "../users/User.model.ts";
 import type {
   AuthConfig,
   AuthResponse,
+  LoginDTO,
   RegisterDTO,
   SafeUser,
 } from "./Auth.model.ts";
@@ -58,6 +59,41 @@ export class AuthService {
 
     return {
       user: this.toSafeUser(newUser),
+      token,
+    };
+  }
+
+  async login(dto: LoginDTO): Promise<AuthResponse> {
+    if (!dto.username) {
+      throw new AppError("Username is required", 400);
+    }
+
+    if (!dto.password) {
+      throw new AppError("Password is required", 400);
+    }
+
+    const usernameAlready = await this.repository.findByUsername(dto.username);
+
+    if (!usernameAlready) {
+      throw new AppError("Invalid credentials", 401);
+    }
+
+    const comparePassword = await bcrypt.compare(
+      dto.password,
+      usernameAlready.password_hash,
+    );
+
+    if (!comparePassword) {
+      throw new AppError("Invalid credentials", 401);
+    }
+
+    const token = jwt.sign(
+      { id: usernameAlready.id, username: usernameAlready.username },
+      this.authConfig.jwtSecret,
+    );
+
+    return {
+      user: this.toSafeUser(usernameAlready),
       token,
     };
   }
