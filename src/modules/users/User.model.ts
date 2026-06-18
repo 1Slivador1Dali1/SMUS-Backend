@@ -34,13 +34,6 @@ export interface WeightHistory {
 export interface WeightsHistory {
   items: WeightHistory[];
 }
-
-export interface CreateUserDto {
-  username: string;
-  password: string;
-  is_superuser?: boolean;
-}
-
 export interface UpdateUserDto {
   username?: string;
   is_superuser?: string;
