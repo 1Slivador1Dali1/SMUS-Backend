@@ -19,8 +19,8 @@ const authConfig = {
 };
 
 const authModule = initializeAuthModule(pool, authConfig);
-const notionModule = initializeNotionModule(pool);
-const userModule = initializeUserModule(pool);
+const notionModule = initializeNotionModule(pool, authConfig);
+const userModule = initializeUserModule(pool, authConfig);
 
 app.get("/", (req, res) => {
   res.send("Home Express!");

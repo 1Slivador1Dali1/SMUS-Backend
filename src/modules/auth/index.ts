@@ -9,6 +9,6 @@ export const initializeAuthModule = (pool: Pool, authConfig: AuthConfig) => {
   const repository = new AuthRepository(pool);
   const service = new AuthService(repository, authConfig);
   const controller = new AuthController(service);
-  const router = createAuthRouter(controller);
+  const router = createAuthRouter(controller, authConfig);
   return { repository, service, controller, router };
 };

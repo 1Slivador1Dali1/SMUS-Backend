@@ -28,5 +28,5 @@ export interface AuthResponse {
 
 export interface AuthConfig {
   jwtSecret: string;
-  jwtExpisenIn?: string;
+  jwtExpiresIn?: string;
 }
