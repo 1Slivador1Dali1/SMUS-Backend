@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { AppError } from "../../utils/AppError.ts";
-import type { IUser } from "../users/User.model.ts";
+import type { IUser, UserResponse } from "../users/User.model.ts";
 import type {
   AuthConfig,
   AuthResponse,
@@ -20,7 +20,7 @@ export class AuthService {
     this.authConfig = authConfig;
   }
 
-  private toSafeUser(user: IUser): SafeUser {
+  private toSafeUser(user: IUser | UserResponse): SafeUser {
     return {
       id: user.id,
       username: user.username,
@@ -52,14 +52,26 @@ export class AuthService {
     };
 
     const newUser = await this.repository.createUser(newUserDTO);
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: newUser.id, username: newUser.username },
       this.authConfig.jwtSecret,
+      { expiresIn: "15m" },
     );
+
+    const refreshToken = jwt.sign(
+      { id: newUser.id },
+      this.authConfig.jwtSecret,
+      { expiresIn: "7d" },
+    );
+
+    const refreshHash = await bcrypt.hash(refreshToken, 10);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await this.repository.saveRefreshToken(newUser.id, refreshHash, expiresAt);
 
     return {
       user: this.toSafeUser(newUser),
-      token,
+      accessToken,
+      refreshToken,
     };
   }
 
@@ -87,14 +99,38 @@ export class AuthService {
       throw new AppError("Invalid credentials", 401);
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: userFind.id, username: userFind.username },
       this.authConfig.jwtSecret,
+      { expiresIn: "15m" },
     );
+
+    const refreshToken = jwt.sign(
+      { id: userFind.id },
+      this.authConfig.jwtSecret,
+      { expiresIn: "7d" },
+    );
+
+    const refreshHash = await bcrypt.hash(refreshToken, 10);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await this.repository.saveRefreshToken(userFind.id, refreshHash, expiresAt);
 
     return {
       user: this.toSafeUser(userFind),
-      token,
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async me(userId: string): Promise<{ user: SafeUser }> {
+    const userFind = await this.repository.findById(userId);
+
+    if (!userFind) {
+      throw new AppError("Invalid credentials", 401);
+    }
+
+    return {
+      user: this.toSafeUser(userFind),
     };
   }
 }

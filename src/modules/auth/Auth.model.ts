@@ -23,10 +23,18 @@ export interface SafeUser {
 
 export interface AuthResponse {
   user: SafeUser;
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface AuthConfig {
   jwtSecret: string;
   jwtExpiresIn?: string;
+}
+
+export interface RefreshToken {
+  id: string;
+  userId: string;
+  token: string;
+  expiresAt: Date;
 }

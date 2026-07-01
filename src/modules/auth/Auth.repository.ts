@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
 import type { IUser, UserResponse } from "../users/User.model.ts";
-import type { CreateUserDTO } from "./Auth.model.ts";
+import type { CreateUserDTO, RefreshToken } from "./Auth.model.ts";
 
 export class AuthRepository {
   private pool: Pool;
@@ -34,4 +34,22 @@ export class AuthRepository {
     );
     return result.rows[0] || null;
   }
+
+  async saveRefreshToken(
+    userId: string,
+    tokenHash: string,
+    expiresAt: Date,
+  ): Promise<RefreshToken | null> {
+    const result = await this.pool.query(
+      "INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3) RETURNING *",
+      [userId, tokenHash, expiresAt],
+    );
+    return result.rows[0] || null;
+  }
+
+  async findRefreshToken(tokenHash: string) {}
+
+  async deleteRefreshToken(tokenHash: string) {}
+
+  async deleteAllUserTokens(userId: string) {}
 }
