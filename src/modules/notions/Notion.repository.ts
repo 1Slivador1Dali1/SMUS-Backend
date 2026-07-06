@@ -10,7 +10,7 @@ export class NotionRepository {
 
   async findAll(): Promise<INotions> {
     const result = await this.pool.query<INotion>(
-      "SELECT id, name, description, created_at, updated_at FROM notions ORDER BY created_at DESC"
+      "SELECT id, name, description, created_at, updated_at FROM notions ORDER BY created_at DESC",
     );
 
     return {
@@ -21,7 +21,7 @@ export class NotionRepository {
   async findById(id: string): Promise<INotion | null> {
     const result = await this.pool.query<INotion>(
       "SELECT id, name, description, created_at, updated_at FROM notions WHERE id = $1",
-      [id]
+      [id],
     );
 
     return result.rows[0] || null;
@@ -30,7 +30,7 @@ export class NotionRepository {
   async create(notion: CreateNotionDto): Promise<INotion> {
     const result = await this.pool.query<INotion>(
       "INSERT INTO notions (name, description) VALUES ($1, $2) RETURNING *",
-      [notion.name, notion.description]
+      [notion.name, notion.description],
     );
 
     return result.rows[0] as INotion;
@@ -38,11 +38,17 @@ export class NotionRepository {
 
   async update(
     id: string,
-    updates: Partial<CreateNotionDto>
+    updates: Partial<CreateNotionDto>,
   ): Promise<INotion | null> {
-    const updateFields = Object.keys(updates).filter(
-      (key) => updates[key as keyof CreateNotionDto] !== undefined
+    const ALLOWED_FIELDS: (keyof CreateNotionDto)[] = ["name", "description"];
+
+    const updateFields = ALLOWED_FIELDS.filter(
+      (key) => updates[key] !== undefined,
     );
+
+    if (updateFields.length === 0) {
+      return this.findById(id);
+    }
 
     const setClause = updateFields
       .map((field, index) => `${field} = $${index + 2}`)
