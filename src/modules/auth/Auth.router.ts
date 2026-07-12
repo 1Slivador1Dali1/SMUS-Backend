@@ -11,6 +11,7 @@ export const createAuthRouter = (
 
   router.post("/register", authController.register);
   router.post("/login", authController.login);
+  router.post("/refresh", authController.refresh);
   router.use(authMiddleware(authConfig));
   router.get("/me", authController.me);
   return router;

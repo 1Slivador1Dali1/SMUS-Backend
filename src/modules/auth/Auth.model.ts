@@ -38,3 +38,8 @@ export interface RefreshToken {
   token: string;
   expiresAt: Date;
 }
+
+export interface RefreshResponse {
+  accessToken: string;
+  refreshToken: string;
+}

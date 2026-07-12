@@ -5,6 +5,7 @@ import type {
   AuthConfig,
   AuthResponse,
   LoginDTO,
+  RefreshResponse,
   RegisterDTO,
   SafeUser,
 } from "./Auth.model.ts";
@@ -119,6 +120,54 @@ export class AuthService {
       user: this.toSafeUser(userFind),
       accessToken,
       refreshToken,
+    };
+  }
+
+  async refresh(refreshToken: string): Promise<RefreshResponse> {
+    const decodePayload = jwt.verify(
+      refreshToken,
+      this.authConfig.jwtSecret,
+    ) as { id: string };
+
+    const userFind = await this.repository.findById(decodePayload.id);
+    if (!userFind) {
+      throw new AppError("Invalid credentials", 401);
+    }
+    const findRefreshTokens = await this.repository.findRefreshTokens(
+      userFind.id,
+    );
+    let tokenFind = null;
+    for (const t of findRefreshTokens) {
+      if (await bcrypt.compare(refreshToken, t.token)) {
+        tokenFind = t;
+        break;
+      }
+    }
+    if (!tokenFind) {
+      throw new AppError("Not found token", 404);
+    }
+
+    await this.repository.deleteRefreshToken(tokenFind.id);
+
+    const newAccessToken = jwt.sign(
+      { id: userFind.id, username: userFind.username },
+      this.authConfig.jwtSecret,
+      { expiresIn: "15m" },
+    );
+
+    const newRefreshToken = jwt.sign(
+      { id: userFind.id },
+      this.authConfig.jwtSecret,
+      { expiresIn: "7d" },
+    );
+
+    const refreshHash = await bcrypt.hash(newRefreshToken, 10);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await this.repository.saveRefreshToken(userFind.id, refreshHash, expiresAt);
+
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
     };
   }
 

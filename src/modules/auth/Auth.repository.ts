@@ -47,9 +47,22 @@ export class AuthRepository {
     return result.rows[0] || null;
   }
 
-  async findRefreshToken(tokenHash: string) {}
+  async findRefreshTokens(userId: string): Promise<RefreshToken[]> {
+    const result = await this.pool.query(
+      "SELECT id, user_id, token, expires_at FROM refresh_tokens WHERE user_id=$1",
+      [userId],
+    );
 
-  async deleteRefreshToken(tokenHash: string) {}
+    return result.rows;
+  }
 
-  async deleteAllUserTokens(userId: string) {}
+  async deleteRefreshToken(tokenId: string) {
+    await this.pool.query(" DELETE FROM refresh_tokens WHERE id=$1", [tokenId]);
+  }
+
+  async deleteAllUserTokens(userId: string) {
+    await this.pool.query(" DELETE FROM refresh_tokens WHERE user_id=$1", [
+      userId,
+    ]);
+  }
 }

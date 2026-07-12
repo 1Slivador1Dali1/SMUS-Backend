@@ -20,5 +20,13 @@ export class AuthController {
     res.status(200).json(credentials);
   };
 
+  refresh = async (req: Request, res: Response): Promise<void> => {
+    const refreshToken = req.body.refreshToken;
+    const ref = await this.authService.refresh(refreshToken);
+    res.status(200).json(ref);
+  };
+
+  logout = async (req: Request, res: Response): Promise<void> => {};
+
   me = async (req: Request, res: Response) => {};
 }
