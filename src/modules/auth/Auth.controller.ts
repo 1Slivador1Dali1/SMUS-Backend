@@ -26,7 +26,11 @@ export class AuthController {
     res.status(200).json(ref);
   };
 
-  logout = async (req: Request, res: Response): Promise<void> => {};
+  logout = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user?.id;
+    await this.authService.logout(userId ?? "");
+    res.status(204).end();
+  };
 
   me = async (req: Request, res: Response) => {};
 }

@@ -171,6 +171,19 @@ export class AuthService {
     };
   }
 
+  async logout(userId: string): Promise<void> {
+    if (!userId) {
+      throw new AppError("Invalid credentials", 401);
+    }
+
+    const findUser = await this.repository.findById(userId);
+    if (!findUser) {
+      throw new AppError("User not found", 404);
+    }
+
+    await this.repository.deleteAllUserTokens(userId);
+  }
+
   async me(userId: string): Promise<{ user: SafeUser }> {
     const userFind = await this.repository.findById(userId);
 

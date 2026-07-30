@@ -13,6 +13,7 @@ export const createAuthRouter = (
   router.post("/login", authController.login);
   router.post("/refresh", authController.refresh);
   router.use(authMiddleware(authConfig));
+  router.post("/logout", authController.logout);
   router.get("/me", authController.me);
   return router;
 };
