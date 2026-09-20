@@ -4,6 +4,7 @@ import { initializeUserModule } from "./modules/users/index.ts";
 import pool from "./config/db.ts";
 import { initializeAuthModule } from "./modules/auth/index.ts";
 import { errorHandler } from "./middlewares/errorHandler.ts";
+import { initializeTaskModule } from "./modules/tasks/index.ts";
 
 const app = express();
 const port = 3000;
@@ -21,6 +22,7 @@ const authConfig = {
 const authModule = initializeAuthModule(pool, authConfig);
 const notionModule = initializeNotionModule(pool, authConfig);
 const userModule = initializeUserModule(pool, authConfig);
+const taskModule = initializeTaskModule(pool, authConfig);
 
 app.get("/", (req, res) => {
   res.send("Home Express!");
@@ -29,6 +31,7 @@ app.get("/", (req, res) => {
 app.use("/auth", authModule.router);
 app.use("/notions", notionModule.router);
 app.use("/users", userModule.router);
+app.use("/tasks", taskModule.router);
 
 app.use(errorHandler);
 
