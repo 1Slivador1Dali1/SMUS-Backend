@@ -45,21 +45,23 @@ CREATE TABLE notions (
     -- user_id
 );
 
-#TODO
--- CREATE TABLE tasks (
---     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
---     name VARCHAR(255) NOT NULL,
---     description:TEXT,
---     status:ENUM(
---         'pending',
---         'completed',
---         'rejected',
---         'work'
---     ) DEFAULT 'pending',
---     created_at:TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     updated_at:TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     user_id:UUID
--- );
+CREATE TABLE tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    status VARCHAR(32) NOT NULL DEFAULT 'pending' CHECK (
+        status IN (
+            'pending',
+            'work',
+            'completed',
+            'rejected'
+        )
+    ),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID NOT NULL REFERENCES users (id),
+    responsible_id UUID REFERENCES users (id)
+);
 
 CREATE TABLE exercises (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
