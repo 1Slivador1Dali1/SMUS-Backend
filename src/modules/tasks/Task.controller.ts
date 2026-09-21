@@ -9,20 +9,22 @@ export class TaskController {
   }
 
   getAllTasks = async (req: Request, res: Response) => {
-    const userId = req.user?.id;
-    const tasks = await this.service.getAllTasks(userId ?? "");
+    const userId = req.user!.id;
+    const tasks = await this.service.getAllTasks(userId);
     res.status(200).json(tasks);
   };
 
   getTaskById = async (req: Request, res: Response) => {
     const taskId = req.params.id ?? "";
-    const task = await this.service.getTaskById(taskId);
+    const userId = req.user!.id
+    const task = await this.service.getTaskById(taskId, userId);
 
     res.status(200).json(task);
   };
 
   create = async (req: Request, res: Response) => {
-    const { name, description, created_by, responsible_id } = req.body;
+    const { name, description, responsible_id } = req.body;
+    const created_by = req.user!.id
     const newTask = await this.service.create({
       name,
       description,
@@ -34,20 +36,22 @@ export class TaskController {
 
   update = async (req: Request, res: Response) => {
     const taskId = req.params.id ?? "";
-    const { name, description, created_by, responsible_id } = req.body;
+    const userId = req.user!.id
+    const { name, description, status, responsible_id } = req.body;
     const updatedTask = await this.service.updateTask(taskId, {
       name,
       description,
-      created_by,
+      status,
       responsible_id
-    });
+    }, userId);
 
     res.status(200).json(updatedTask);
   };
 
   delete = async (req: Request, res: Response): Promise<void> => {
     const taskId = req.params.id ?? "";
-    await this.service.deleteTask(taskId);
+    const userId = req.user!.id
+    await this.service.deleteTask(taskId, userId);
     res.status(204).send();
   };
 }

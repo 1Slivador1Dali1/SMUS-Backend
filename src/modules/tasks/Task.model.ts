@@ -19,3 +19,10 @@ export interface CreateTaskDTO {
   created_by: string,
   responsible_id?: string
 }
+
+export interface UpdateTaskDTO {
+  name: string,
+  description: string,
+  status: string
+  responsible_id: string
+}

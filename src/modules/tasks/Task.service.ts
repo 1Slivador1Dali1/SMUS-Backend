@@ -1,5 +1,5 @@
 import { AppError } from "../../utils/AppError.ts";
-import type { CreateTaskDTO, ITask, ITasks } from "./Task.model.ts";
+import type { CreateTaskDTO, ITask, ITasks, UpdateTaskDTO } from "./Task.model.ts";
 import type { TaskRepository } from "./Task.repository.ts";
 
 export class TaskService {
@@ -16,8 +16,18 @@ export class TaskService {
     return await this.repository.findAll(userId);
   }
 
-  async getTaskById(id: string): Promise<ITask | null> {
-    return (await this.repository.findById(id)) || null
+  async getTaskById(id: string, userId: string): Promise<ITask | null> {
+    const task = await this.repository.findById(id)
+
+    if (!task) {
+      throw new AppError("Not found", 404)
+    }
+
+    if (task?.responsible_id !== userId && task?.created_by !== userId) {
+      throw new AppError("Access denied", 403)
+    }
+
+    return task
   }
 
   async create(taskData: CreateTaskDTO): Promise<ITask> {
@@ -28,8 +38,19 @@ export class TaskService {
     return this.repository.create(taskData)
   }
 
-  async updateTask(id: string, updates: Partial<CreateTaskDTO>): Promise<ITask> {
-    if (!updates.name && !updates.description && !updates.created_by && !updates.responsible_id) {
+  async updateTask(id: string, updates: Partial<UpdateTaskDTO>, userId: string): Promise<ITask> {
+
+    const task = await this.repository.findById(id)
+
+    if (!task) {
+      throw new AppError("Not found", 404)
+    }
+
+    if (task?.responsible_id !== userId && task?.created_by !== userId) {
+      throw new AppError("Access denied", 403)
+    }
+
+    if (!updates.name && !updates.description && !updates.status && !updates.responsible_id) {
       throw new AppError("At least one field must be provided for update", 400);
     }
 
@@ -42,7 +63,18 @@ export class TaskService {
     return updatedTask
   }
 
-  async deleteTask(id: string): Promise<void> {
+  async deleteTask(id: string, userId: string): Promise<void> {
+
+    const task = await this.repository.findById(id)
+
+    if (!task) {
+      throw new AppError("Not found", 404)
+    }
+
+    if (task?.created_by !== userId) {
+      throw new AppError("Access denied", 403)
+    }
+
     const isDeleted = await this.repository.delete(id)
 
     if (!isDeleted) {

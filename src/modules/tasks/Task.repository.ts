@@ -1,5 +1,5 @@
 import type { Pool } from "pg";
-import type { ITasks, ITask, CreateTaskDTO } from "./Task.model.ts";
+import type { ITasks, ITask, CreateTaskDTO, UpdateTaskDTO } from "./Task.model.ts";
 
 export class TaskRepository {
   private pool: Pool;
@@ -25,12 +25,12 @@ export class TaskRepository {
   }
 
   async create(task: CreateTaskDTO): Promise<ITask> {
-    const result = await this.pool.query<ITask>("CREATE INTO tasks (name, description, created_by, responsible_id) VALUES ($1, $2, $3, $4)", [task.name, task.description ?? null, task.created_by, task.responsible_id ?? null])
+    const result = await this.pool.query<ITask>("INSERT INTO tasks (name, description, created_by, responsible_id) VALUES ($1, $2, $3, $4) RETURNING *", [task.name, task.description ?? null, task.created_by, task.responsible_id ?? null])
     return result.rows[0] as ITask
   }
 
-  async update(id: string, updates: Partial<CreateTaskDTO>): Promise<ITask | null> {
-    const ALLOWED_FIELDS: (keyof CreateTaskDTO)[] = ["name", "description", "created_by", "responsible_id"]
+  async update(id: string, updates: Partial<UpdateTaskDTO>): Promise<ITask | null> {
+    const ALLOWED_FIELDS: (keyof UpdateTaskDTO)[] = ["name", "description", "status", "responsible_id"]
 
     const updateFields = ALLOWED_FIELDS.filter(
       (key) => updates[key] !== undefined
@@ -47,7 +47,7 @@ export class TaskRepository {
     const params: any[] = [id]
 
     updateFields.forEach((field) => {
-      params.push(updates[field as keyof CreateTaskDTO])
+      params.push(updates[field as keyof UpdateTaskDTO])
     })
 
     const query = `UPDATE tasks SET ${fullSetClause} WHERE id=$1 RETURNING *`
