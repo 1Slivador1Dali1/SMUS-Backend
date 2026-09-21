@@ -10,6 +10,10 @@ export const createTaskRouter = (
   const router = Router();
   router.use(authMiddleware(authConfig));
   router.get("/", taskController.getAllTasks);
+  router.get("/:id", taskController.getTaskById)
+  router.post("/", taskController.create)
+  router.patch("/:id", taskController.update)
+  router.delete("/:id", taskController.delete)
 
   return router;
 };

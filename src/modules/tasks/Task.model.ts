@@ -12,3 +12,10 @@ export interface ITask {
 export interface ITasks {
   items: ITask[];
 }
+
+export interface CreateTaskDTO {
+  name: string,
+  description?: string,
+  created_by: string,
+  responsible_id?: string
+}
