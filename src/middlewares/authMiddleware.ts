@@ -23,6 +23,7 @@ export const authMiddleware = (authConfig: AuthConfig) => {
       const payload = jwt.verify(token, authConfig.jwtSecret) as {
         id: string;
         username: string;
+        is_superuser: boolean
       };
       req.user = payload;
       next();

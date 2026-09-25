@@ -54,7 +54,7 @@ export class AuthService {
 
     const newUser = await this.repository.createUser(newUserDTO);
     const accessToken = jwt.sign(
-      { id: newUser.id, username: newUser.username },
+      { id: newUser.id, username: newUser.username, is_superuser: newUser.is_superuser },
       this.authConfig.jwtSecret,
       { expiresIn: "15m" },
     );
@@ -101,7 +101,7 @@ export class AuthService {
     }
 
     const accessToken = jwt.sign(
-      { id: userFind.id, username: userFind.username },
+      { id: userFind.id, username: userFind.username, is_superuser: userFind.is_superuser },
       this.authConfig.jwtSecret,
       { expiresIn: "15m" },
     );
@@ -150,7 +150,7 @@ export class AuthService {
     await this.repository.deleteRefreshToken(tokenFind.id);
 
     const newAccessToken = jwt.sign(
-      { id: userFind.id, username: userFind.username },
+      { id: userFind.id, username: userFind.username, is_superuser: userFind.is_superuser },
       this.authConfig.jwtSecret,
       { expiresIn: "15m" },
     );

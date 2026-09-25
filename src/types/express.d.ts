@@ -1,4 +1,4 @@
-export {};
+export { };
 
 declare global {
   namespace Express {
@@ -6,6 +6,7 @@ declare global {
       user?: {
         id: string;
         username: string;
+        is_superuser: boolean
       };
     }
   }
