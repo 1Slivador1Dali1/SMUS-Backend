@@ -11,29 +11,6 @@ export interface IUsers {
   items: IUser[];
 }
 
-export interface UserMetrics {
-  id: string;
-  user_id: string;
-  current_weight: number | null;
-  height: number | null;
-  birth_date: Date | null;
-  gender: "male" | "female";
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface WeightHistory {
-  id: string;
-  user_id: string;
-  weight: number;
-  date: Date;
-  notes: string | null;
-  created_at: Date;
-}
-
-export interface WeightsHistory {
-  items: WeightHistory[];
-}
 export interface UpdateUserDto {
   username?: string;
   is_superuser?: string;
@@ -49,17 +26,4 @@ export interface UserResponse {
 export interface AuthResponse {
   user: UserResponse;
   token: string;
-}
-
-export interface UpdateUserMetricsDto {
-  current_weight?: number;
-  height?: number;
-  birth_date?: Date;
-  gender?: "male" | "female";
-}
-
-export interface AddWeightDto {
-  weight: number;
-  date: Date;
-  notes?: string;
 }

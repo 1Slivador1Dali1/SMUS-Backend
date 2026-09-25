@@ -1,13 +1,9 @@
 import type { Pool } from "pg";
 import type {
-  AddWeightDto,
   IUser,
   IUsers,
   UpdateUserDto,
-  UserMetrics,
-  UserResponse,
-  WeightHistory,
-  WeightsHistory,
+  UserResponse
 } from "./User.model.ts";
 
 export class UserRepository {
@@ -57,36 +53,5 @@ export class UserRepository {
     const result = await this.pool.query("DELETE FROM users WHERE id=$1", [id]);
 
     return (result.rowCount ?? 0) > 0;
-  }
-
-  async findMetricsByUserId(id: string): Promise<UserMetrics | null> {
-    const query = "SELECT * FROM user_metrics WHERE user_id=$1";
-    const result = await this.pool.query(query, [id]);
-    return result.rows[0] || null;
-  }
-
-  // #TODO: Add-Update Metric User
-
-  async addWeightRecord(
-    id: string,
-    data: AddWeightDto,
-  ): Promise<WeightHistory> {
-    const query =
-      "INSERT INTO weight_history (user_id, weight, date, notes) VALUES ($1, $2, $3, $4) RETURNING *";
-    const values = [id, data.weight, data.date, data.notes];
-
-    const result = await this.pool.query(query, values);
-    return result.rows[0];
-  }
-
-  async findWeightHistory(id: string): Promise<WeightsHistory> {
-    const result = await this.pool.query<WeightHistory>(
-      "SELECT * FROM weight_history WHERE user_id=$1 ORDER BY date DESC",
-      [id],
-    );
-
-    return {
-      items: result.rows,
-    };
   }
 }

@@ -1,12 +1,8 @@
 import { AppError } from "../../utils/AppError.ts";
 import type {
-  AddWeightDto,
   IUsers,
   UpdateUserDto,
-  UserMetrics,
-  UserResponse,
-  WeightHistory,
-  WeightsHistory,
+  UserResponse
 } from "./User.model.ts";
 import type { UserRepository } from "./User.repository.ts";
 
@@ -60,31 +56,5 @@ export class UserService {
     if (!isDeleted) {
       throw new AppError("User not found", 404);
     }
-  }
-
-  async getUserMetrics(id: string): Promise<UserMetrics | null> {
-    if (!id) {
-      throw new AppError("User id is required", 400);
-    }
-
-    return (await this.repository.findMetricsByUserId(id)) || null;
-  }
-
-  // #TODO: Add-Update Metric User
-
-  async setWeight(id: string, data: AddWeightDto): Promise<WeightHistory> {
-    if (!id) {
-      throw new AppError("User id is required", 400);
-    }
-
-    return await this.repository.addWeightRecord(id, data);
-  }
-
-  async getAllWeightHistory(id: string): Promise<WeightsHistory> {
-    if (!id) {
-      throw new AppError("User id is required", 400);
-    }
-
-    return await this.repository.findWeightHistory(id);
   }
 }

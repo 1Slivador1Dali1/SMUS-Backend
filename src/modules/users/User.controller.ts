@@ -31,28 +31,4 @@ export class UserController {
     await this.userService.deleteUser(String(userId));
     res.status(204).send();
   };
-
-  getUserMetrics = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.params.id;
-    const result = await this.userService.getUserMetrics(String(userId));
-    res.status(200).json(result);
-  };
-
-  // #TODO: Add-Update Metric User
-
-  setWeight = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.params.id ?? "";
-    const data = req.body;
-    const result = await this.userService.setWeight(userId, data);
-
-    res.status(201).json(result);
-  };
-
-  getAllWeightHistory = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.params.id;
-    const weightsHistory = await this.userService.getAllWeightHistory(
-      userId ?? "",
-    );
-    res.status(200).json(weightsHistory);
-  };
 }

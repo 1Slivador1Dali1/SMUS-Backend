@@ -14,27 +14,6 @@ CREATE TABLE refresh_tokens (
     expires_at TIMESTAMP NOT NULL
 )
 
-CREATE TABLE user_metrics (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE UNIQUE,
-    current_weight DECIMAL(5, 2),
-    height DECIMAL(5, 2),
-    birth_date DATE,
-    gender VARCHAR(10) CHECK (gender IN ('male', 'female')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-
-CREATE TABLE weight_history (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    weight DECIMAL(5, 2) NOT NULL,
-    date DATE NOT NULL DEFAULT CURRENT_DATE,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (user_id, date)
-)
-
 CREATE TABLE notions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     name VARCHAR(255) NOT NULL,
