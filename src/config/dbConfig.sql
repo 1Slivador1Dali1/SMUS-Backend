@@ -1,4 +1,4 @@
-CREATE TABLE users (
+﻿CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     username VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -113,3 +113,27 @@ CREATE TABLE exercise_sets (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
+
+CREATE TABLE metric_catalog (
+    key VARCHAR(100) PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE metric_definitions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    key VARCHAR(100) NOT NULL REFERENCES metric_catalog (key),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, key)
+);
+
+CREATE TABLE metric_samples (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    definition_id UUID NOT NULL REFERENCES metric_definitions (id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    value TEXT NOT NULL,
+    recorded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    comment TEXT,
+    created_by UUID NOT NULL REFERENCES users (id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
